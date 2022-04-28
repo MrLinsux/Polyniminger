@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "IgBprrcJ2VXZqkBgIH4SXnOLSFzZHbXXgtByuVw1sbat5cLxWpVevSe9qGNW0Mie9TErPPB8s2jbai4tYlovxA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\Polyniminger.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mrPlag\\.nuget\\packages\\wpfmath\\0.11.0\\wpfmath.0.11.0.nupkg.sha512"
+  ],
+  "logs": []
+}

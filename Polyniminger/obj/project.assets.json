@@ -1,0 +1,102 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "WpfMath/0.11.0": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp3.1/WpfMath.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/WpfMath.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WPF"
+        ]
+      }
+    }
+  },
+  "libraries": {
+    "WpfMath/0.11.0": {
+      "sha512": "4xy4+Z0sIg8UTtqL0SHifYg/vJhfGW9GwYfCbkWgCRQ7zdqil/ipLsxV4ffVrRAnV3diXQb6wAJtZbWCSWpsCA==",
+      "type": "package",
+      "path": "wpfmath/0.11.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net452/WpfMath.dll",
+        "lib/netcoreapp3.1/WpfMath.dll",
+        "wpfmath.0.11.0.nupkg.sha512",
+        "wpfmath.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    ".NETCoreApp,Version=v3.1": [
+      "WpfMath >= 0.11.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\mrPlag\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\Polyniminger.csproj",
+      "projectName": "Polyniminger",
+      "projectPath": "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\Polyniminger.csproj",
+      "packagesPath": "C:\\Users\\mrPlag\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\mrPlag\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "netcoreapp3.1"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "netcoreapp3.1": {
+        "targetAlias": "netcoreapp3.1",
+        "dependencies": {
+          "WpfMath": {
+            "target": "Package",
+            "version": "[0.11.0, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
