@@ -52,6 +52,7 @@ namespace Polyniminger
                                     F = Polynomial.Reducing(F, item);
                                     latex +=F.GetLaTeXView(@$"(^{{{item.C.GetLaTeXView(false,false, "x", "y", "z")}}})", "x", "y", "z");
                                     isNew = false;
+                                    break;
                                 }
                             }
                         }
