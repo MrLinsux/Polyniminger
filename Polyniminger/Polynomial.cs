@@ -320,7 +320,7 @@ namespace Polyniminger
         }
         public string GetLaTeXView(string name, params string[] vars)
         {
-            string ans = name + "=" + this.GetMonom(0).GetLaTeXView(true, false, vars);
+            string ans = name + this.GetMonom(0).GetLaTeXView(true, false, vars);
             for (int i = 1; i < this.TermNum; i++)
                 if (this.GetMonom(i).scalar != 0)
                     ans += ((GetMonom(i).scalar > 0) ? '+' : '-') + this.GetMonom(i).GetLaTeXView(false, false, vars);

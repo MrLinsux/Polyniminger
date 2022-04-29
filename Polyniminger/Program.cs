@@ -15,21 +15,30 @@ namespace Polyniminger
             // нахождение Базиса Грёбнера из готовой системы (справа нули, а слева многочлены степени 1 и больше) от n переменных
             List<Polynomial> system = new List<Polynomial>();
 
-            //system.Add(new Polynomial(true, new Monomial(3, 1f, 2), new Monomial(3, -1f)));
-            //system.Add(new Polynomial(true, new Monomial(3, 1f, 1, 1), new Monomial(3, -1f, 0, 1)));
-            //system.Add(new Polynomial(true, new Monomial(3, 1f, 1, 0, 1), new Monomial(3, 1f, 0, 0, 1)));
+            string[] fileContent = File.ReadAllLines("sourceSystem.txt");
+            string[] vars = fileContent[1].Split(' ');
+            string[][] nums = new string[fileContent.Length - 3][];
+            for (int i = 3; i < fileContent.Length; i++)
+                nums[i - 3] = fileContent[i].Split(' ');
 
-            //system.Add(new Polynomial(true, new Monomial(3, 1f, 2), new Monomial(3, 1f, 0,2), new Monomial(3, 1f, 0,0,2)));
-            //system.Add(new Polynomial(true, new Monomial(3, 1f, 1), new Monomial(3, 1f, 0, 1), new Monomial(3, -1f, 0, 0, 1)));
-            //system.Add(new Polynomial(true, new Monomial(3, 1f, 0, 1), new Monomial(3, 1f, 0, 0, 2)));
-
-            system.Add(new Polynomial(true, new Monomial(3, 1f, 1, 1), new Monomial(3, -2f, 0, 1), new Monomial(3, 1f)));
-            system.Add(new Polynomial(true, new Monomial(3, 1f, 0, 1,1), new Monomial(3, 1f, 0,0, 1), new Monomial(3, -1f)));
-            system.Add(new Polynomial(true, new Monomial(3, 1f, 0, 1,1), new Monomial(3, 1f, 1,1, 1), new Monomial(3, 1f, 0,0,1)));
+            int varNum = vars.Length;
+            int polNum = fileContent.Length - 3;
+            for (int i = 0; i < polNum;i++)
+            {
+                var temp = new List<Monomial>();
+                for (int j = 0; j < nums[i].Length; j += varNum + 1)
+                {
+                    var temp1 = new int[varNum];
+                    for (int k = j+1; k < j+varNum + 1; k++)
+                        temp1[k-1-j] = Convert.ToInt32(nums[i][k]);
+                    temp.Add(new Monomial(varNum, Convert.ToInt32(nums[i][j]), temp1));
+                }
+                system.Add(new Polynomial(true, temp.ToArray()));
+            }
 
             latex += @"\\ \cases{";
             for (int i = 0; i < system.Count; i++)
-                latex += system[i].GetLaTeXView("f_" + (i + 1).ToString(), "x", "y", "z") + @"=0\\";
+                latex += system[i].GetLaTeXView("f_" + (i + 1).ToString()+"=", vars) + @"=0\\";
             latex += @"}";
 
             for (int i = 0; i < system.Count-1; i++)
@@ -40,7 +49,7 @@ namespace Polyniminger
                     if(!gcd.isConst)
                     {
                         Polynomial F = (system[j].C / gcd) * system[i] - (system[i].C / gcd) * system[j];
-                        latex += @$"\\\text{{({i + 1}, {j + 1}): }}" + F.GetLaTeXView(@$"F_{{{i + 1},{j + 1}}}", "x", "y", "z");
+                        latex += @$"\\\text{{({i + 1}, {j + 1}): }}" + F.GetLaTeXView(@$"F_{{{i + 1},{j + 1}}}=", vars);
                         bool isNew = false;
                         while((F.C.scalar != 0) && !isNew)
                         {
@@ -50,7 +59,7 @@ namespace Polyniminger
                                 if (F.C % item.C)
                                 {
                                     F = Polynomial.Reducing(F, item);
-                                    latex +=F.GetLaTeXView(@$"(^{{{item.C.GetLaTeXView(false,false, "x", "y", "z")}}})", "x", "y", "z");
+                                    latex +=F.GetLaTeXView(@$"^{{({item.GetLaTeXView("","x", "y", "z")})}}=", vars);
                                     isNew = false;
                                     break;
                                 }
@@ -60,8 +69,32 @@ namespace Polyniminger
                         if (F.C.scalar != 0)
                         {
                             system.Add(Polynomial.Abs(F));
-                            latex += "=f_" + system.Count;
+                            latex += @"=\color{orange}{f_" + system.Count+"}";
                             i = 0;
+                            if (F.C.isConst)
+                            {
+                                Console.WriteLine("Got Const.\nSystem is not be resolve");
+                                latex += @"\\\text{В процессе решения после редуцирования была полученная константа. Значит система несовместна.}";
+                                // создаём изображение в LaTeX
+                                string _fileName = @"resolveGrebner.png";
+                                var _parser = new TexFormulaParser();
+                                var _formula = _parser.Parse(latex);
+                                var _pngBytes = _formula.RenderToPng(30.0, 0.0, 0.0, "Arial");
+                                File.WriteAllBytes(_fileName, _pngBytes);
+                                if (File.Exists(_fileName))
+                                {
+                                    Console.WriteLine("Result File Sucsess Created");
+                                    try
+                                    {
+                                        Process.Start(_fileName);
+                                    }
+                                    catch
+                                    {
+                                        Console.WriteLine("Не удалось открыть изображение с решением. Сохранено в " + _fileName);
+                                    }
+                                }
+                                return;
+                            }
                         }
                     }
                     else
@@ -78,11 +111,11 @@ namespace Polyniminger
 
             latex += @"\\\text{Решив систему с помощью базиса Грёбнера получили систему:}\\ \cases{";
             for (int i = 0; i < system.Count; i++)
-                latex += system[i].GetLaTeXView("f_" + (i + 1).ToString(), "x", "y", "z") + @"=0\\";
+                latex += system[i].GetLaTeXView("f_" + (i + 1).ToString()+"=", vars) + @"=0\\";
             latex += @"}";
 
             // надо его минимизировать
-            for (int i = 0; i < system.Count - 1; i++)
+            for (int i = 0; i < system.Count; i++)
             {
                 for (int j = 0; j < i; j++)
                 {
@@ -100,49 +133,58 @@ namespace Polyniminger
             }
             latex += @"\\\text{Минимизированная система:}\\ \cases{";
             for (int i = 0; i < system.Count; i++)
-                latex += system[i].GetLaTeXView("f_" + (i + 1).ToString(), "x", "y", "z") + @"=0\\";
+                latex += system[i].GetLaTeXView("f_" + (i + 1).ToString()+"=", vars) + @"=0\\";
             latex += @"}";
+
             // и редуцировать
-            for (int i = 0; i < system.Count - 1; i++)
+            bool isReduced;
+            do
             {
-                for (int j = 0; j < i; j++)
+                isReduced = true;
+                for (int i = 0; i < system.Count; i++)
                 {
-                    for(int k = 1; k < system[j].TermNum; k++)
+                    for (int j = 0; j < i; j++)
                     {
-                        if(system[j].GetMonom(k) % system[i].C)
+                        for (int k = 1; k < system[j].TermNum; k++)
                         {
-                            system[j] = Polynomial.Reducing(system[j], system[i]);
-                            break;
+                            if (system[j].GetMonom(k) % system[i].C)
+                            {
+                                system[j] = (system[i] * (system[j].GetMonom(k) / system[i].C)) - system[j];
+                                isReduced = false;
+                                break;
+                            }
                         }
                     }
-                }
-                for (int j = i + 1; j < system.Count; j++)
-                {
-                    for (int k = 1; k < system[j].TermNum; k++)
+                    for (int j = i + 1; j < system.Count; j++)
                     {
-                        if (system[j].GetMonom(k) % system[i].C)
+                        for (int k = 1; k < system[j].TermNum; k++)
                         {
-                            system[j] = Polynomial.Reducing(system[j], system[i]);
-                            break;
+                            if (system[j].GetMonom(k) % system[i].C)
+                            {
+                                system[j] = (system[i] * (system[j].GetMonom(k) / system[i].C)) - system[j];
+                                isReduced = false;
+                                break;
+                            }
                         }
                     }
                 }
             }
+            while (!isReduced);
             latex += @"\\\text{Минимизированная и редуцированная система:}\\ \cases{";
             for (int i = 0; i < system.Count; i++)
-                latex += system[i].GetLaTeXView("f_" + (i + 1).ToString(), "x", "y", "z") + @"=0\\";
+                latex += system[i].GetLaTeXView("f_" + (i + 1).ToString()+"=", vars) + @"=0\\";
             latex += @"}";
 
 
             // создаём изображение в LaTeX
-            const string fileName = @"resolveGrebner.png";
+            string fileName = @"resolveGrebner.png";
             var parser = new TexFormulaParser();
             var formula = parser.Parse(latex);
             var pngBytes = formula.RenderToPng(30.0, 0.0, 0.0, "Arial");
             File.WriteAllBytes(fileName, pngBytes);
             if (File.Exists(fileName))
             {
-                Console.WriteLine("Resolve File Sucsess Created");
+                Console.WriteLine("Result File Sucsess Created");
                 try
                 {
                     Process.Start(fileName);

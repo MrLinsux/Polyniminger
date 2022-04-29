@@ -1,0 +1,16 @@
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\bin\Release\netcoreapp3.1\Polyniminger.exe
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\bin\Release\netcoreapp3.1\Polyniminger.deps.json
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\bin\Release\netcoreapp3.1\Polyniminger.runtimeconfig.json
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\bin\Release\netcoreapp3.1\Polyniminger.runtimeconfig.dev.json
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\bin\Release\netcoreapp3.1\Polyniminger.dll
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\bin\Release\netcoreapp3.1\Polyniminger.pdb
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\bin\Release\netcoreapp3.1\WpfMath.dll
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.csproj.AssemblyReference.cache
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.AssemblyInfoInputs.cache
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.AssemblyInfo.cs
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.csproj.CoreCompileInputs.cache
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.csproj.CopyComplete
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.dll
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.pdb
+C:\Users\mrPlag\Documents\Projects\Programs\Polyniminger\Polyniminger\obj\Release\netcoreapp3.1\Polyniminger.genruntimeconfig.cache
