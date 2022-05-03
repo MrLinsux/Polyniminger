@@ -15,7 +15,14 @@ namespace Polyniminger
             // нахождение Базиса Грёбнера из готовой системы (справа нули, а слева многочлены степени 1 и больше) от n переменных
             List<Polynomial> system = new List<Polynomial>();
 
-            string[] fileContent = File.ReadAllLines("sourceSystem.txt");
+            string[] fileContent;
+            if(File.Exists("sourceSystem.txt"))
+                fileContent = File.ReadAllLines("sourceSystem.txt");
+            else
+            {
+                fileContent = "Переменные (в лексикографическом порядке)\nx y z\nМногочлены исходной системы - одночлены через пробел: скаляр степень переменной 1 степень переменной 2 ... степень переменной n:\n1 1 2 0 -1 0 0 1 -1 0 0 2\n1 2 1 0 -1 0 1 0\n1 0 2 0 -1 0 0 2".Split('\n');
+                File.WriteAllLines("sourceSystem.txt", fileContent);
+            }
             string[] vars = fileContent[1].Split(' ');
             string[][] nums = new string[fileContent.Length - 3][];
             for (int i = 3; i < fileContent.Length; i++)
