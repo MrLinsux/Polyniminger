@@ -152,7 +152,7 @@ namespace Polyniminger
         }
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            return ((this.scalar == ((Monomial)obj).scalar)&&(this.variables == ((Monomial)obj).variables));
         }
         public override int GetHashCode()
         {
@@ -160,17 +160,11 @@ namespace Polyniminger
         }
         public static bool operator ==(Monomial a, Monomial b)
         {
-            if((a.scalar == b.scalar)&&(a.variables == b.variables))
-                return true;
-            else
-                return false;
+            return a.variables == b.variables;
         }
         public static bool operator !=(Monomial a, Monomial b)
         {
-            if ((a.scalar != b.scalar) || (a.variables != b.variables))
-                return true;
-            else
-                return false;
+            return a.variables != b.variables;
         }
         public static bool operator >(Monomial a, Monomial b)
         {
@@ -225,15 +219,15 @@ namespace Polyniminger
             Monomial ans = new Monomial(a.VarNumber);
 
             // сначала коэффициент
-            while (b.scalar != a.scalar)
+            /*while (b.scalar != a.scalar)
             {
                 if (b.scalar > a.scalar)
                     b.scalar -= a.scalar;
                 else
                     a.scalar -= b.scalar;
-            }
+            }*/
 
-            ans.scalar = a.scalar;
+            ans.scalar = 1;
             // а потом и степеней переменных
             for(int i = 0; i < a.VarNumber; i++)
             {

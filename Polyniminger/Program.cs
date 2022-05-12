@@ -60,9 +60,11 @@ namespace Polyniminger
                         bool isNew = false;
                         while((F.C.scalar != 0) && !isNew)
                         {
+                            //Console.WriteLine("...");
                             isNew = true;
                             foreach(Polynomial item in system)
                             {
+                            //Console.WriteLine("...");
                                 if (F.C % item.C)
                                 {
                                     F = Polynomial.Reducing(F, item);
@@ -122,6 +124,7 @@ namespace Polyniminger
             latex += @"}";
 
             // надо его минимизировать
+            Console.WriteLine("Minimization...");
             for (int i = 0; i < system.Count; i++)
             {
                 for (int j = 0; j < i; j++)
@@ -142,8 +145,10 @@ namespace Polyniminger
             for (int i = 0; i < system.Count; i++)
                 latex += system[i].GetLaTeXView("f_" + (i + 1).ToString()+"=", vars) + @"=0\\";
             latex += @"}";
+            Console.WriteLine("Ok");
 
             // и редуцировать
+            Console.WriteLine("Reducing...");
             bool isReduced;
             do
             {
@@ -181,6 +186,9 @@ namespace Polyniminger
             for (int i = 0; i < system.Count; i++)
                 latex += system[i].GetLaTeXView("f_" + (i + 1).ToString()+"=", vars) + @"=0\\";
             latex += @"}";
+            for (int i = 0; i < system.Count; i++)
+                Console.WriteLine(system[i].GetPolynomial());
+            Console.WriteLine("Ok");
 
 
             // создаём изображение в LaTeX
@@ -188,6 +196,7 @@ namespace Polyniminger
             var parser = new TexFormulaParser();
             var formula = parser.Parse(latex);
             var pngBytes = formula.RenderToPng(30.0, 0.0, 0.0, "Arial");
+            Console.WriteLine("Save Image...");
             File.WriteAllBytes(fileName, pngBytes);
             if (File.Exists(fileName))
             {
