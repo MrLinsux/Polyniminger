@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Admin\\Documents\\Projects\\Polyniminger\\Polyniminger\\Polyniminger.csproj": {}
+    "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\Polyniminger.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Admin\\Documents\\Projects\\Polyniminger\\Polyniminger\\Polyniminger.csproj": {
+    "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\Polyniminger.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Admin\\Documents\\Projects\\Polyniminger\\Polyniminger\\Polyniminger.csproj",
+        "projectUniqueName": "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\Polyniminger.csproj",
         "projectName": "Polyniminger",
-        "projectPath": "C:\\Users\\Admin\\Documents\\Projects\\Polyniminger\\Polyniminger\\Polyniminger.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Admin\\Documents\\Projects\\Polyniminger\\Polyniminger\\obj\\",
+        "projectPath": "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\Polyniminger.csproj",
+        "packagesPath": "C:\\Users\\mrPlag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\mrPlag\\Documents\\Projects\\Programs\\Polyniminger\\Polyniminger\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\mrPlag\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -58,7 +60,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
         }
       }
     }

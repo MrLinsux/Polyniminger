@@ -26,7 +26,7 @@ namespace Polyniminger
         {
             get
             {
-                Polynomial ans = new Polynomial(VarNumber);
+                Polynomial ans = new Polynomial(Vars);
                 ans.monomials = new Monomial[TermNum - 1];
                 for (int i = 1; i < TermNum; i++)
                 {
@@ -52,6 +52,10 @@ namespace Polyniminger
             get { return monomials.Length; }
         }
         public int VarNumber;
+        public string[] Vars
+        {
+            get { return this.C.Vars; }
+        }
 
 
         public Polynomial(params Monomial[] monomials)
@@ -68,9 +72,9 @@ namespace Polyniminger
             if (printPolynomial)
                 Console.WriteLine(this.GetPolynomial());
         }
-        public Polynomial(int n)
+        public Polynomial(string[] vars)
         {
-            this.monomials = new Monomial[] { new Monomial(n) };
+            this.monomials = new Monomial[] { new Monomial(vars) };
             VarNumber = monomials[0].VarNumber;
             this.SortMonomials();
         }
@@ -116,7 +120,7 @@ namespace Polyniminger
 
             for (int i = 0; i < a.TermNum; i++)
             {
-                if (a.monomials[i].variables.SequenceEqual(b.variables))
+                if (a.monomials[i].powers.SequenceEqual(b.powers))
                 {
                     a.SetMonom(i, (Monomial)(a.GetMonom(i) + b));
                     return a;
@@ -163,10 +167,10 @@ namespace Polyniminger
 
         public static Polynomial operator +(Polynomial a, float c)
         {
-            Monomial b = new Monomial(a.VarNumber, c);
+            Monomial b = new Monomial(a.Vars, c);
             for (int i = 0; i < a.TermNum; i++)
             {
-                if (a.monomials[i].variables == b.variables)
+                if (a.monomials[i].powers == b.powers)
                 {
                     a.SetMonom(i, (Monomial)(a.GetMonom(i) + b));
                     return a;
@@ -207,12 +211,12 @@ namespace Polyniminger
             }
             while (!isSort);
             if(this.monomials.Length == 0)
-                monomials = new Monomial[] { new Monomial(this.VarNumber) };
+                monomials = new Monomial[] { new Monomial(this.Vars) };
         }
 
         public static Polynomial operator *(Polynomial a, Polynomial b)
         {
-            Polynomial ans = new Polynomial(new Monomial(a.VarNumber));
+            Polynomial ans = new Polynomial(new Monomial(a.Vars));
             for(int i = 0; i < a.TermNum; i++)
             {
                 for (int j = 0; j < b.TermNum; j++) 
@@ -227,7 +231,7 @@ namespace Polyniminger
         }
         public static Polynomial operator *(Polynomial a, Monomial b)
         {
-            Polynomial ans = new Polynomial(new Monomial(a.VarNumber));
+            Polynomial ans = new Polynomial(new Monomial(a.Vars));
             for (int i = 0; i < a.TermNum; i++)
             {
                     ans += a.GetMonom(i) * b;

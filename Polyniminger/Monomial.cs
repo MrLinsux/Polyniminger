@@ -8,29 +8,30 @@ namespace Polyniminger
 {
     struct Monomial
     {
-        public int[] variables;        // состоит из степеней всех переменных
+        public int[] powers;        // состоит из степеней всех переменных
         public float scalar;           // коэффициент перед одночленом
+        public string[] Vars;            // переменные, из которых состоит одночлен
         public int Power
         {
             // степень одночлена, т.е. сумма степеней каждой переменной
             get
             {
                 int power = 0;
-                for (int i = 0; i < variables.Length; i++)
-                    power += variables[i];
+                for (int i = 0; i < powers.Length; i++)
+                    power += powers[i];
                 return power;
             }
         }
         public int VarNumber
         {
-            get { return variables.Length; }
+            get { return powers.Length; }
         }
         public bool isConst
         {
             get
             {
                 for (int i = 0; i < VarNumber; i++)
-                    if (variables[i] != 0)
+                    if (powers[i] != 0)
                         return false;
                 return true;
             }
@@ -44,53 +45,61 @@ namespace Polyniminger
             get { return Math.Abs(scalar); }
         }
 
-        public Monomial(int n)
+        public Monomial(string[] vars)
         {
             ///<summary>
             /// создаёт одночлен от n переменных из одного скаляра равного 0
             ///</summary>
-            variables = new int[n];
+            int n = vars.Length;
+            this.Vars = vars;
+            powers = new int[n];
             scalar = 0;
             for(int i = 0; i < n; i++)
-                variables[i] = 0;
+                powers[i] = 0;
         }
 
-        public Monomial(int n, float _scalar, params int[] powers)
+        public Monomial(string[] vars, float _scalar, params int[] powers)
         {
             ///<summary>
             /// создаёт одночлен от n переменных из скаляра и со всеми указаными степенями
             /// если степеней меньше, то остальные равны 0
             ///</summary>
-            variables = new int[n];
+            int n = vars.Length;
+            this.Vars = vars;
+            this.powers = new int[n];
             scalar = _scalar;
             for (int i = 0; i < powers.Length; i++)
-                variables[i] = powers[i];
+                this.powers[i] = powers[i];
             for (int i = powers.Length; i < n; i++)
-                variables[i] = 0;
+                this.powers[i] = 0;
         }
 
-        public Monomial(int n, float _scalar)
+        public Monomial(string[] vars, float _scalar)
         {
             ///<summary>
             /// создаёт одночлен от n переменных из одного скаляра
             ///</summary>
-            variables = new int[n];
+            int n = vars.Length;
+            this.Vars = vars;
+            powers = new int[n];
             scalar = _scalar;
             for (int i = 0; i < n; i++)
-                variables[i] = 0;
+                powers[i] = 0;
         }
-        public Monomial(int n, params int[] powers)
+        public Monomial(string[] vars, params int[] powers)
         {
             ///<summary>
             /// создаёт одночлен от n переменных из скаляра равного 1 и со всеми указаными степенями
             /// если степеней меньше, то остальные равны 0
             ///</summary>
-            variables = new int[n];
+            int n = vars.Length;
+            this.Vars = vars;
+            this.powers = new int[n];
             scalar = 1;
             for (int i = 0; i < powers.Length; i++)
-                variables[i] = powers[i];
+                this.powers[i] = powers[i];
             for (int i = powers.Length - 1; i < n + 1; i++)
-                variables[i] = 0;
+                this.powers[i] = 0;
         }
 
         public static explicit operator Monomial(Polynomial pol)
@@ -99,9 +108,9 @@ namespace Polyniminger
         }
         public static Polynomial operator+(Monomial a, Monomial b)
         {
-            if(a.variables.SequenceEqual(b.variables))
+            if(a.powers.SequenceEqual(b.powers))
             {
-                return new Monomial(a.VarNumber, a.scalar + b.scalar, a.variables);
+                return new Monomial(a.Vars, a.scalar + b.scalar, a.powers);
             }
             else
             {
@@ -111,9 +120,9 @@ namespace Polyniminger
         public static Polynomial operator -(Monomial a, Monomial c)
         {
             Monomial b = -c;
-            if (a.variables == b.variables)
+            if (a.powers == b.powers)
             {
-                return new Monomial(a.VarNumber, a.scalar + b.scalar, a.variables);
+                return new Monomial(a.Vars, a.scalar + b.scalar, a.powers);
             }
             else
             {
@@ -126,25 +135,25 @@ namespace Polyniminger
         }
         public static Monomial operator*(Monomial a, Monomial b)
         {
-            Monomial answer = new Monomial(a.VarNumber, a.scalar * b.scalar);
+            Monomial answer = new Monomial(a.Vars, a.scalar * b.scalar);
             for(int i = 0; i < a.VarNumber; i++)
-                answer.variables[i] = a.variables[i] + b.variables[i];
+                answer.powers[i] = a.powers[i] + b.powers[i];
             return answer;
         }
         public static Monomial operator *(Monomial a, float b)
         {
-            return new Monomial(a.VarNumber, a.scalar * b, a.variables);
+            return new Monomial(a.Vars, a.scalar * b, a.powers);
         }
 
         public static Monomial operator/(Monomial a, Monomial b)
         {
-            Monomial ans = new Monomial(a.VarNumber);
+            Monomial ans = new Monomial(a.Vars);
             if ((b.scalar != 0) && (a % b))
             {
                 ans.scalar = a.scalar / b.scalar;
                 for (int i = 0; i < a.VarNumber; i++)
                 {
-                    ans.variables[i] = a.variables[i] - b.variables[i];
+                    ans.powers[i] = a.powers[i] - b.powers[i];
                 }
             }
 
@@ -152,7 +161,7 @@ namespace Polyniminger
         }
         public override bool Equals(object obj)
         {
-            return ((this.scalar == ((Monomial)obj).scalar)&&(this.variables == ((Monomial)obj).variables));
+            return ((this.scalar == ((Monomial)obj).scalar)&&(this.powers == ((Monomial)obj).powers));
         }
         public override int GetHashCode()
         {
@@ -160,19 +169,19 @@ namespace Polyniminger
         }
         public static bool operator ==(Monomial a, Monomial b)
         {
-            return a.variables == b.variables;
+            return a.powers == b.powers;
         }
         public static bool operator !=(Monomial a, Monomial b)
         {
-            return a.variables != b.variables;
+            return a.powers != b.powers;
         }
         public static bool operator >(Monomial a, Monomial b)
         {
             for (int i = 0; i < a.VarNumber; i++)
             {
-                if (a.variables[i] < b.variables[i])
+                if (a.powers[i] < b.powers[i])
                     return false;
-                else if (a.variables[i] > b.variables[i])
+                else if (a.powers[i] > b.powers[i])
                     return true;
             }
             return false;
@@ -181,9 +190,9 @@ namespace Polyniminger
         {
             for (int i = 0; i < a.VarNumber; i++)
             {
-                if (a.variables[i] > b.variables[i])
+                if (a.powers[i] > b.powers[i])
                     return false;
-                else if (a.variables[i] < b.variables[i])
+                else if (a.powers[i] < b.powers[i])
                     return true;
             }
             return false;
@@ -193,7 +202,7 @@ namespace Polyniminger
             // делится ли один одночлен, на другой
             for(int i = 0; i < a.VarNumber; i++)
             {
-                if (a.variables[i] - b.variables[i] < 0)
+                if (a.powers[i] - b.powers[i] < 0)
                     return false;
             }
             return true;
@@ -216,7 +225,7 @@ namespace Polyniminger
         {
             //TODO: подумать о реализации без поиска НОД скаляров
             // находим НОД одночленов
-            Monomial ans = new Monomial(a.VarNumber);
+            Monomial ans = new Monomial(a.Vars);
 
             // сначала коэффициент
             /*while (b.scalar != a.scalar)
@@ -231,24 +240,25 @@ namespace Polyniminger
             // а потом и степеней переменных
             for(int i = 0; i < a.VarNumber; i++)
             {
-                ans.variables[i] = Math.Min(a.variables[i], b.variables[i]);
+                ans.powers[i] = Math.Min(a.powers[i], b.powers[i]);
             }
 
             return ans;
         }
 
-        public static Monomial RandMonomial(int n, int min, int max)
+        public static Monomial RandMonomial(string[] vars, int min, int max)
         {
+            int n = vars.Length;
             Random rand = new Random();
-            Monomial answer = new Monomial(n);
+            Monomial answer = new Monomial(vars);
             answer.scalar = rand.Next(min, max);
             for (int i = 0; i < n; i++)
-                answer.variables[i] = rand.Next(min, max);
+                answer.powers[i] = rand.Next(min, max);
             return answer;
         }
         public string GetMonomial(bool withSign = false)
         {
-            return (withSign ? this.scalar : Math.Abs(this.scalar)) + "*(" + String.Join(", ", this.variables) + ")";
+            return (withSign ? this.scalar : Math.Abs(this.scalar)) + "*(" + String.Join(", ", this.powers) + ")";
         }
 
         public string GetLaTeXView(bool withSign = false, bool with1 = false, params string[] vars)
@@ -265,8 +275,8 @@ namespace Polyniminger
 
             if (with1)
                 for (int i = 0; i < this.VarNumber; i++)
-                    if (variables[i] != 0)
-                        ans += vars[i] + "^" + variables[i];
+                    if (powers[i] != 0)
+                        ans += vars[i] + "^" + powers[i];
                     else;
             else
             {
@@ -274,8 +284,8 @@ namespace Polyniminger
                     return this.Abs.ToString();
                 else
                 for (int i = 0; i < this.VarNumber; i++)
-                    if (variables[i] != 0)
-                        ans += vars[i] + (variables[i] == 1 ? "" : ("^" + variables[i]));
+                    if (powers[i] != 0)
+                        ans += vars[i] + (powers[i] == 1 ? "" : ("^" + powers[i]));
             }
 
             return ans;
