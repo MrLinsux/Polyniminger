@@ -11,4 +11,10 @@
     <PackageReference Include="WpfMath" Version="0.11.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="ComplexNumber">
+      <HintPath>..\..\..\Libs\ComplexNumber\ComplexNumber\bin\Debug\ComplexNumber.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

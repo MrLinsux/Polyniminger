@@ -8,26 +8,41 @@ namespace Polyniminger
     struct Polynomial
     {
         // полином как сумма одночленов
+        private Monomial[] Monomials
+        {
+            get 
+            {
+                return monomials;
+            }
+            set
+            {
+                if (value != null)
+                    monomials = value;
+                else
+                    monomials = new Monomial[] { new Monomial(this.Vars) };
+            }
+        }
+
         private Monomial[] monomials;
         public Monomial C
         {
             get 
             {
-                return monomials[0]; 
+                return Monomials[0]; 
             }
-            set { monomials[0] = value; }
+            set { Monomials[0] = value; }
         }
         public Monomial MinorMonomial
         {
-            get { return monomials[TermNum - 1]; }
-            set { monomials[TermNum - 1] = value; }
+            get { return Monomials[TermNum - 1]; }
+            set { Monomials[TermNum - 1] = value; }
         }
         public Polynomial M 
         {
             get
             {
                 Polynomial ans = new Polynomial(Vars);
-                ans.monomials = new Monomial[TermNum - 1];
+                ans.Monomials = new Monomial[TermNum - 1];
                 for (int i = 1; i < TermNum; i++)
                 {
                     ans.SetMonom(i - 1, this.GetMonom(i));
@@ -40,48 +55,40 @@ namespace Polyniminger
             get
             {
                 int power = 0;
-                for(int i = 0; i < monomials.Length; i++)
+                for(int i = 0; i < Monomials.Length; i++)
                 {
-                    power += monomials[i].Power;
+                    power += Monomials[i].Power;
                 }
                 return power;
             }
         }
         public int TermNum
         {
-            get { return monomials.Length; }
+            get { return Monomials.Length; }
         }
-        public int VarNumber;
-        public string[] Vars
-        {
-            get { return this.C.Vars; }
-        }
+        public string[] Vars;
 
 
         public Polynomial(params Monomial[] monomials)
         {
-            this.monomials = monomials;
-            VarNumber = monomials[0].VarNumber;
+            if (monomials.Length > 0) this.monomials = monomials;
+            else throw new Exception("Forbidden to create Polynomial without Monomials");
+            Vars = monomials[0].Vars;
             this.SortMonomials();
         }
         public Polynomial(bool printPolynomial = false, params Monomial[] monomials)
         {
-            this.monomials = monomials;
-            VarNumber = monomials[0].VarNumber;
+            if (monomials.Length > 0) this.monomials = monomials;
+            else throw new Exception("Forbidden to create Polynomial without Monomials");
+            Vars = monomials[0].Vars;
             this.SortMonomials();
             if (printPolynomial)
                 Console.WriteLine(this.GetPolynomial());
         }
         public Polynomial(string[] vars)
         {
-            this.monomials = new Monomial[] { new Monomial(vars) };
-            VarNumber = monomials[0].VarNumber;
-            this.SortMonomials();
-        }
-        public Polynomial(Monomial monomial)
-        {
-            monomials = new Monomial[] { monomial };
-            VarNumber = monomials[0].VarNumber;
+            monomials = new Monomial[] { new Monomial(vars) };
+            Vars = vars;
             this.SortMonomials();
         }
 
@@ -120,7 +127,7 @@ namespace Polyniminger
 
             for (int i = 0; i < a.TermNum; i++)
             {
-                if (a.monomials[i].powers.SequenceEqual(b.powers))
+                if (a.Monomials[i].powers.SequenceEqual(b.powers))
                 {
                     a.SetMonom(i, (Monomial)(a.GetMonom(i) + b));
                     return a;
@@ -170,7 +177,7 @@ namespace Polyniminger
             Monomial b = new Monomial(a.Vars, c);
             for (int i = 0; i < a.TermNum; i++)
             {
-                if (a.monomials[i].powers == b.powers)
+                if (a.Monomials[i].powers == b.powers)
                 {
                     a.SetMonom(i, (Monomial)(a.GetMonom(i) + b));
                     return a;
@@ -183,12 +190,12 @@ namespace Polyniminger
         }
         public void Add(Monomial a)
         {
-            Monomial[] t = new Monomial[this.monomials.Length+1];
+            Monomial[] t = new Monomial[this.Monomials.Length+1];
             for (int i = 0; i < t.Length-1; i++)
-                t[i] = this.monomials[i];
-            t[this.monomials.Length] = a;
+                t[i] = this.Monomials[i];
+            t[this.Monomials.Length] = a;
 
-            this.monomials = t;
+            this.Monomials = t;
             //this.SortMonomials();
         }
 
@@ -198,20 +205,20 @@ namespace Polyniminger
             do
             {
                 isSort = true;
-                for(int i = 0; i < this.monomials.Length-1; i++)
+                for(int i = 0; i < this.Monomials.Length-1; i++)
                 {
-                    if(this.monomials[i] < this.monomials[i+1])
+                    if(this.Monomials[i] < this.Monomials[i+1])
                     {
                         isSort = false;
-                        var t = this.monomials[i];
-                        this.monomials[i] = this.monomials[i + 1];
-                        this.monomials[i + 1] = t;
+                        var t = this.Monomials[i];
+                        this.Monomials[i] = this.Monomials[i + 1];
+                        this.Monomials[i + 1] = t;
                     }
                 }
             }
             while (!isSort);
-            if(this.monomials.Length == 0)
-                monomials = new Monomial[] { new Monomial(this.Vars) };
+            if(this.Monomials.Length == 0)
+                Monomials = new Monomial[] { new Monomial(this.Vars) };
         }
 
         public static Polynomial operator *(Polynomial a, Polynomial b)
@@ -244,7 +251,7 @@ namespace Polyniminger
         public static Polynomial operator *(Polynomial a, float b)
         {
             for(int i = 0; i < a.TermNum; i++)
-                a.monomials[i] *= b;
+                a.Monomials[i] *= b;
 
             a.SortMonomials();
             return a;
@@ -259,14 +266,14 @@ namespace Polyniminger
         }
         public static bool operator ==(Polynomial a, Polynomial b)
         {
-            if ((a.VarNumber == b.VarNumber) && (a.monomials == b.monomials))
+            if ((a.Vars == b.Vars) && (a.Monomials == b.Monomials))
                 return true;
             else
                 return false;
         }
         public static bool operator !=(Polynomial a, Polynomial b)
         {
-            if ((a.VarNumber != b.VarNumber) || (a.monomials != b.monomials))
+            if ((a.Vars != b.Vars) || (a.Monomials != b.Monomials))
                 return true;
             else
                 return false;
@@ -291,29 +298,39 @@ namespace Polyniminger
             return answer;
         }            
 
-        public static Polynomial Reducing(Polynomial a, Polynomial b)
+        public static Polynomial Reducing(Polynomial a, Polynomial b, ref string latex)
         {
             // проверяем зацеп
             // исходим из предположения, что a можео редуцировать по b
-            b *= a.C / b.C;
+            if (!(a.C % b.C))
+                throw new Exception("Monomial a is not be divided by b");
+
+            var t = a.C / b.C;
+            t.scalar = a.C.scalar;
+
+            var s = b.C.scalar;
+            b *= t;
+            a *= s;
+            latex += a.GetLaTeXView(@"f_{00}=", "x", "y", "z");
+            latex += b.GetLaTeXView(@"f_{11}=", "x", "y", "z");
             return a - b;
         }
 
-        public Monomial GetMonom(int i) => this.monomials[i];
+        public Monomial GetMonom(int i) => this.Monomials[i];
         public void SetMonom(int k, Monomial a)
         {
             if(a.scalar == 0)
             {
                 Monomial[] t = new Monomial[this.TermNum - 1];
                 for(int i = 0; i < k; i++)
-                    t[i] = this.monomials[i];
+                    t[i] = this.Monomials[i];
                 for (int i = k; i < this.TermNum-1; i++)
-                    t[i] = this.monomials[i+1];
+                    t[i] = this.Monomials[i+1];
 
-                this.monomials = t;
+                this.Monomials = t;
             }   
             else
-                this.monomials[k] = a;
+                this.Monomials[k] = a;
         }
         public static Polynomial Abs(Polynomial a)
         {
@@ -330,6 +347,40 @@ namespace Polyniminger
                     ans += ((GetMonom(i).scalar > 0) ? '+' : '-') + this.GetMonom(i).GetLaTeXView(false, false, vars);
 
             return ans;
+        }
+
+        public Polynomial Normalazing()
+        {
+            // возвращает многочлен, у которого коэффициенты - целые числа
+            var ans = this;
+            //if (ans.TermNum > 1)
+            //{
+            //    for (int i = 0; i < ans.TermNum; i++)
+            //    {
+
+            //    }
+            //}
+            //else if(ans.TermNum == 1)
+            //{
+            //    ans.Monomials[0].scalar = 1;
+            //    return ans;
+            //}
+            if (ans.TermNum == 1) ans.Monomials[0].scalar = 1;
+            if (ans.Monomials[0].scalar < 0)
+                ans = -ans;
+            return ans;
+        }
+
+        private static int GCD(int a, int b)
+        {
+            while (a != 0 && b != 0)
+            {
+                if (a > b)
+                    a %= b;
+                else
+                    b %= a;
+            }
+            return a | b;
         }
     }
 }

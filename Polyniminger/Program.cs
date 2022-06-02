@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using WpfMath;
+using ComplexNumber;
 
 namespace Polyniminger
 {
     class Program
     {
+        const int maxLinesNumber = 41;      // число строк, после которого будет записан отдельный файл с решением
+        static int fileNum = 0;                    // если файлов будет бельше чем 1, то так будем присваивать им имена с индеком 0 - один файл, иначе файлов несклько
         [STAThreadAttribute]
         static void Main(string[] args)
         {
-            const int maxLinesNumber = 41;      // число строк, после которого будет записан отдельный файл с решением
-            int fileNum = 0;                    // если файлов будет бельше чем 1, то так будем присваивать им имена с индеком 0 - один файл, иначе файлов несклько
-
             string latex = @"\text{Решение системы с помощью базиса грёбнера}\\\text{Исходная система:}";   // latex-заготовка для создания картинки
 
             // нахождение Базиса Грёбнера из готовой системы (справа нули, а слева многочлены степени 1 и больше) от n переменных
@@ -52,17 +51,18 @@ namespace Polyniminger
 
             // выводим систему
             latex += OutSystem(system.ToArray());
-            string latexT = latex;  // сохраняем промежуточный прогресс решения
+            string mainLatex = "";  // сохраняем промежуточный прогресс решения
 
             // цикл проходит по всей "лесенке" многочленов, включая новые уравнения
             // если появляется новый, но начинаем цикл с 
             for (int i = 0; i < system.Count - 1; i++)
             {
+                int l = 0;
                 for (int j = i + 1; j < system.Count; j++)
                 {
                     // находим НОД одночленов 
                     // так проверяем зацеп и собираем начальный многочлен Fij, который будет редуцировать
-                    Monomial gcd = Monomial.GCD(system[i].C, system[j].C);
+                    Monomial gcd = Monomial.GCD(system[i].C, system[j].C); l = 0;
                     if (!gcd.isConst)
                     {
                         Polynomial F = (system[j].C / gcd) * system[i] - (system[i].C / gcd) * system[j];
@@ -78,7 +78,10 @@ namespace Polyniminger
                                 if (F.C % item.C)
                                 {
                                     // если можем проредуцировать, делаем это
-                                    F = Polynomial.Reducing(F, item);
+                                    F = Polynomial.Reducing(F, item, ref latex);
+                                    Console.WriteLine(F.GetPolynomial()); l++;
+                                    if (l >= 40) { 
+                                        SaveImage(@"resolveGrebner.png", latex); throw new Exception("!!!"); }
                                     latex += F.GetLaTeXView(@$"^{{({item.GetLaTeXView("", "x", "y", "z")})}}=", vars);
                                     isNew = false;
                                     break;
@@ -89,9 +92,6 @@ namespace Polyniminger
                         if (F.C.scalar != 0)
                         {
                             // если проредуцировали до конца и это не 0, то сохраняем
-                            system.Add(Polynomial.Abs(F));
-                            latex += @"=\color{orange}{f_" + system.Count + "}";
-                            i = 0;              // Что тут делать то надо?
                             if (F.C.isConst)
                             {
                                 // если это оказалась константа, то система является несовместной, о чём и сообщается 
@@ -101,6 +101,9 @@ namespace Polyniminger
                                 SaveImage(@"resolveGrebner.png", latex);
                                 return;
                             }
+                            system.Add(Polynomial.Abs(F).Normalazing());
+                            latex += @"=\color{orange}{f_" + system.Count + "}";
+                            latex = CheckNewHook(i, j, latex, ref system, ref mainLatex);          // проверяем, сохраняя результат в latex
                         }
                     }
                     else
@@ -108,6 +111,15 @@ namespace Polyniminger
                         // если НОД - константа, но зацепа нет
                         latex += @$"\\\text{{({i + 1}, {j + 1}): Нет зацепа}}";
                         Console.WriteLine($"({i + 1}, {j + 1}): Нет зацепа");
+                    }
+
+                    if(latex.Split(@"\\").Length >= maxLinesNumber)
+                    {
+                        // если размер решения превысил максимальное число строк, то
+                        // сохраняем файл и начинаем записывать новый
+                        SaveImage(@"grebnerResult" + (++fileNum)+".png", latex);
+                        mainLatex += latex;
+                        latex = @"\text{Часть решения " + (fileNum + 1) + "}";
                     }
                 }
             }
@@ -206,6 +218,10 @@ namespace Polyniminger
         static void SaveImage(string path, string latex)
         {
             // создаём файл из latex-строки
+            latex = latex.Replace("∞", "?");
+            latex = latex.Replace("не число", "?");
+            latex = latex.Replace("н", "?");
+            latex = latex.Replace(" ", "?");
             try
             {
                 var parser = new TexFormulaParser();
@@ -214,9 +230,9 @@ namespace Polyniminger
                 Console.WriteLine("Save Image...");
                 File.WriteAllBytes(path, pngBytes);
             }
-            catch
+            catch(Exception e)
             {
-                Console.WriteLine("Error: Unable create file");
+                Console.WriteLine("Error: Unable create file\n" + e.Message);
             }
         }
 
@@ -225,13 +241,13 @@ namespace Polyniminger
             // возвращает строку для latex
             var latex = @"\\ \cases{";
             for (int i = 0; i < system.Length; i++)
-                latex += system[i].GetLaTeXView("f_{" + (i + 1).ToString() + "=", system[0].Vars) + @"}=0\\";
+                latex += system[i].GetLaTeXView("f_{" + (i + 1).ToString() + "}=", system[0].Vars) + @"=0\\";
             latex += @"}";
 
             return latex;
         }
 
-        static string CheckNewHook(int endI, int j, string latex, ref List<Polynomial> system)
+        static string CheckNewHook(int endI, int j, string latex, ref List<Polynomial> system, ref string mainLatex)
         {
             // рекурсивная функция, которая проверяет зацепы нового многочлена с уже пройдеными
             // если тут бедет найден новый многочлен, то запустится рекурсовная функция
@@ -255,7 +271,7 @@ namespace Polyniminger
                             if (F.C % item.C)
                             {
                                 // если можем проредуцировать, делаем это
-                                F = Polynomial.Reducing(F, item);
+                                F = Polynomial.Reducing(F, item, ref latex);
                                 latex += F.GetLaTeXView(@$"^{{({item.GetLaTeXView("", "x", "y", "z")})}}=", system[0].Vars);
                                 isNew = false;
                                 break;
@@ -266,9 +282,6 @@ namespace Polyniminger
                     if (F.C.scalar != 0)
                     {
                         // если проредуцировали до конца и это не 0, то сохраняем
-                        system.Add(Polynomial.Abs(F));
-                        latex += @"=\color{orange}{f_" + system.Count + "}";
-                        i = 0;              // Что тут делать то надо?
                         if (F.C.isConst)
                         {
                             // если это оказалась константа, то система является несовместной, о чём и сообщается 
@@ -278,6 +291,9 @@ namespace Polyniminger
                             SaveImage(@"resolveGrebner.png", latex);
                             Environment.Exit(0);
                         }
+                        system.Add(Polynomial.Abs(F).Normalazing());
+                        latex += @"=\color{orange}{f_" + system.Count + "}";
+                        latex = CheckNewHook(i, j+1, latex, ref system, ref mainLatex);          // проверяем, сохраняя результат в latex
                     }
                 }
                 else
@@ -285,6 +301,15 @@ namespace Polyniminger
                     // если НОД - константа, но зацепа нет
                     latex += @$"\\\text{{({i + 1}, {j + 1}): Нет зацепа}}";
                     Console.WriteLine($"({i + 1}, {j + 1}): Нет зацепа");
+                }
+
+                if (latex.Split(@"\\").Length >= maxLinesNumber)
+                {
+                    // если размер решения превысил максимальное число строк, то
+                    // сохраняем файл и начинаем записывать новый
+                    SaveImage(@"grebnerResult" + (++fileNum), latex);
+                    mainLatex += latex;
+                    latex = @"\text{Часть решения " + (fileNum + 1) + "}";
                 }
             }
 
