@@ -256,6 +256,14 @@ namespace Polyniminger
             a.SortMonomials();
             return a;
         }
+        public static Polynomial operator /(Polynomial a, float b)
+        {
+            for (int i = 0; i < a.TermNum; i++)
+                a.Monomials[i] /= b;
+
+            a.SortMonomials();
+            return a;
+        }
         public override bool Equals(object obj)
         {
             return base.Equals(obj);
@@ -311,8 +319,8 @@ namespace Polyniminger
             var s = b.C.scalar;
             b *= t;
             a *= s;
-            latex += a.GetLaTeXView(@"f_{00}=", "x", "y", "z");
-            latex += b.GetLaTeXView(@"f_{11}=", "x", "y", "z");
+            //latex += a.GetLaTeXView(@"f_{00}=", "x", "y", "z");
+            //latex += b.GetLaTeXView(@"f_{11}=", "x", "y", "z");
             return a - b;
         }
 
@@ -353,26 +361,31 @@ namespace Polyniminger
         {
             // возвращает многочлен, у которого коэффициенты - целые числа
             var ans = this;
-            //if (ans.TermNum > 1)
-            //{
-            //    for (int i = 0; i < ans.TermNum; i++)
-            //    {
 
-            //    }
-            //}
-            //else if(ans.TermNum == 1)
-            //{
-            //    ans.Monomials[0].scalar = 1;
-            //    return ans;
-            //}
-            if (ans.TermNum == 1) ans.Monomials[0].scalar = 1;
+            if (ans.TermNum == 1) 
+                if(ans.C.scalar != 0)
+                    ans.Monomials[0].scalar = 1;
+
             if (ans.Monomials[0].scalar < 0)
                 ans = -ans;
+            if(ans.TermNum > 1)
+            {
+                int gcd = GCD((int)ans.GetMonom(0).scalar, (int)ans.GetMonom(1).scalar);
+
+                for(int i = 1; i < ans.TermNum && gcd != 1; i++)
+                {
+                    gcd = GCD((int)ans.GetMonom(i).scalar, gcd);
+                }
+
+                ans /= gcd;
+            }
             return ans;
         }
 
         private static int GCD(int a, int b)
         {
+            a = Math.Abs(a);
+            b = Math.Abs(b);
             while (a != 0 && b != 0)
             {
                 if (a > b)

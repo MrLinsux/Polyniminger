@@ -144,6 +144,10 @@ namespace Polyniminger
         {
             return new Monomial(a.Vars, a.scalar * b, a.powers);
         }
+        public static Monomial operator /(Monomial a, float b)
+        {
+            return new Monomial(a.Vars, a.scalar / b, a.powers);
+        }
 
         public static Monomial operator/(Monomial a, Monomial b)
         {
